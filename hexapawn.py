@@ -35,7 +35,22 @@ def starting():
     theBoard['low-R'] = 'X'
 
 starting()
-printBoard(theBoard)
+
+
+
+#Define legal move
+#TODO
+
+#Ask player for move
+oldpiece = input('What piece would you like to  move?')
+newpiece = input('Where would you like to move the piece?')
+theBoard[oldpiece] = ' '
+theBoard[newpiece] = 'X'
+
+#AI move
+#TODO
+
+#printBoard(theBoard)
 
 #Check if winning
 def win():
@@ -44,9 +59,12 @@ def win():
     if theBoard['low-L'] == 'O' or theBoard['low-M'] == 'O' or theBoard['low-R'] == 'O':
         print("AI wins. AI will not change.")
 
-def checkWin():
-    theBoard['top-L'] = 'X'
+#AI changes values due to loss
+#TODO
 
-checkWin()
-printBoard(theBoard)
-win()
+# def checkWin():
+#     theBoard['top-L'] = 'X'
+
+# checkWin()
+# printBoard(theBoard)
+# win()
