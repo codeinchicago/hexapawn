@@ -1,8 +1,11 @@
 from app import app
-from flask import render_template, redirect, url_for, flash
+from flask import render_template, redirect, url_for, flash, request
 from flask_login import login_user, login_required, logout_user, current_user
 from app.forms import SignUpForm, PostForm, LoginForm
 from app.models import Post, User
+import xmltodict
+import requests
+import xml.etree.ElementTree as ET
 
 @app.route("/")
 def index():
@@ -123,3 +126,18 @@ def delete_single_post(post_id):
     post_to_delete.delete()
     flash(f'{post_to_delete.title} has been deleted', 'info')
     return redirect(url_for('index'))
+
+
+
+
+
+@app.route("/test")
+def zugbu():
+    return "Hello"
+
+@app.route("/testapp", methods = ['POST', 'GET'], strict_slashes=False)
+def parseRequest():
+    r = requests.get('https://boardgamegeek.com/xmlapi2/thing?id=68264')
+    #print(r.content)
+    #print (content)
+    return r.content
