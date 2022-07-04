@@ -1,8 +1,8 @@
 from app import app
 from flask import render_template, redirect, url_for, flash, request
 from flask_login import login_user, login_required, logout_user, current_user
-from app.forms import SignUpForm, PostForm, LoginForm
-from app.models import Post, User
+from app.forms import GameForm, SignUpForm, PostForm, LoginForm
+from app.models import Post, User, Game
 #import xmltodict
 import requests
 import xml.etree.ElementTree as ET
@@ -129,22 +129,55 @@ def delete_single_post(post_id):
 
 @app.route("/test")
 def zugbu():
-    return render_template('test.html')
+    return render_template('test.html', r =requests.get('https://boardgamegeek.com/xmlapi2/thing?id=68264'))
 
-@app.route("/testapp", methods = ['GET'], strict_slashes=False)
-def parseRequest():
-    r = requests.get('https://boardgamegeek.com/xmlapi2/thing?id=68264')
-    #print(r.content)
-    #print (content)
-    return r.content
+# @app.route("/named", methods = ['GET', 'POST'])
+# def name_entry():
+#     form = GameForm()
+#     if form.validate_on_submit():
+#         title = form.title.data
+    
+# Add a check if game already added to list.
+#               
 
-@app.route("/picture", methods = ['POST', 'GET'])
-def picture():
-    r = requests.get('https://boardgamegeek.com/xmlapi2/thing?id=68264')
-    #print(r.content)
-    #print (content)
-    root =ET.fromstring(r.content)
-    for child in root:
-        print(child.tag, child.attrib)
 
-    return root[0][4].text
+@app.route('/named', methods=['GET', 'POST'])
+def name_entry():
+    form = GameForm()
+    if form.validate_on_submit():
+        # Get the data from the form fields
+        title = form.title.data
+        # Query the User table for any users with username/email from form
+        # user_check = User.query.filter((User.email == email)|(User.username == username)).all()
+        # if user_check:
+        #     flash('A user with that username and/or email already exists. Please try again.', 'danger')
+        #     return redirect(url_for('signup'))
+
+        # Add the user to the database
+        new_game = Game(title = title)
+
+        # Show message of success
+        flash(f'{new_game.title} successfully processed', 'success')
+        # redirect back to the homepage
+        return redirect(url_for('index'))
+
+    return render_template('named.html', form=form)
+
+
+# @app.route("/testapp", methods = ['GET'], strict_slashes=False)
+# def parseRequest():
+#     r = requests.get('https://boardgamegeek.com/xmlapi2/thing?id=68264')
+#     #print(r.content)
+#     #print (content)
+#     return r.content
+
+# @app.route("/picture", methods = ['POST', 'GET'])
+# def picture():
+#     r = requests.get('https://boardgamegeek.com/xmlapi2/thing?id=68264')
+#     #print(r.content)
+#     #print (content)
+#     root =ET.fromstring(r.content)
+#     for child in root:
+#         print(child.tag, child.attrib)
+
+#     return root[0][4].text
