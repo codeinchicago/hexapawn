@@ -3,7 +3,7 @@ from flask import render_template, redirect, url_for, flash, request
 from flask_login import login_user, login_required, logout_user, current_user
 from app.forms import SignUpForm, PostForm, LoginForm
 from app.models import Post, User
-import xmltodict
+#import xmltodict
 import requests
 import xml.etree.ElementTree as ET
 
@@ -127,17 +127,24 @@ def delete_single_post(post_id):
     flash(f'{post_to_delete.title} has been deleted', 'info')
     return redirect(url_for('index'))
 
-
-
-
-
 @app.route("/test")
 def zugbu():
-    return "Hello"
+    return render_template('test.html')
 
-@app.route("/testapp", methods = ['POST', 'GET'], strict_slashes=False)
+@app.route("/testapp", methods = ['GET'], strict_slashes=False)
 def parseRequest():
     r = requests.get('https://boardgamegeek.com/xmlapi2/thing?id=68264')
     #print(r.content)
     #print (content)
     return r.content
+
+@app.route("/picture", methods = ['POST', 'GET'])
+def picture():
+    r = requests.get('https://boardgamegeek.com/xmlapi2/thing?id=68264')
+    #print(r.content)
+    #print (content)
+    root =ET.fromstring(r.content)
+    for child in root:
+        print(child.tag, child.attrib)
+
+    return root[0][4].text
