@@ -4,67 +4,110 @@
 
 #Guide to the board:
 
-# 7 8 9
-# 4 5 6
 # 1 2 3
+# 4 5 6
+# 7 8 9
 
 #Moves are on page 6.
 #Move1 = {'Left': ['8x4', '8-5', '9-6'], 'Center': ['7-4', '7x5']}
 
+
+import random
+
 #Describe moves in term of position:
 
-theBoard = {'top-L': ' ', 'top-M': ' ', 'top-R': ' ',
-'mid-L': ' ', 'mid-M': ' ', 'mid-R': ' ',
-'low-L': ' ', 'low-M': ' ', 'low-R': ' '}
+#Human is X, Computer is O
+
+board = {1: ' ', 2: ' ', 3: ' ',
+4: ' ', 5: ' ', 6: ' ',
+7: ' ', 8: ' ', 9: ' '}
 def printBoard(board):
-    print(board['top-L'] + '|' + board['top-M'] + '|' + board['top-R'])
+    print(board[1] + '|' + board[2] + '|' + board[3])
     print('-+-+-')
-    print(board['mid-L'] + '|' + board['mid-M'] + '|' + board['mid-R'])
+    print(board[4] + '|' + board[5] + '|' + board[6])
     print('-+-+-')
-    print(board['low-L'] + '|' + board['low-M'] + '|' + board['low-R'])
+    print(board[7] + '|' + board[8] + '|' + board[9])
     print('\n')    
     
 
 
 def starting():
-    theBoard['top-L'] = 'O'
-    theBoard['top-M'] = 'O'
-    theBoard['top-R'] = 'O'
-    theBoard['low-L'] = 'X'
-    theBoard['low-M'] = 'X'
-    theBoard['low-R'] = 'X'
+    board[1] = 'O'
+    board[2] = 'O'
+    board[3] = 'O'
+    board[7] = 'X'
+    board[8] = 'X'
+    board[9] = 'X'
 
 starting()
 
+def CPUlegalMove(board, start, end):
+    #Checking for capture
+    if start == (1 or 3) and (end == 5 and board[5] == 'X'):
+        return True
+    elif start == 2 and ((end == 4 or 6) and (board[4] or board[6]) == 'X'):
+        return True
+    elif start == (4 or 6) and (end == 8 and board[8] == 'X'):
+        return True
+    elif start == 5 and ((end == 7 or 9) and (board[7] or board[9]) == 'X'):
+        return True
+    #Check if column in front is empty
+    elif board[start+3] == ' ':
+        return True
+
+def CPUMove(board):
+    pieces = []
+    legal = {}
+
+    for i in range(1,10):
+        if board[i] == 'O':
+            pieces.append(i)
+    print(pieces)
+    for piece in pieces:
+        for num in range(piece,10):
+            if CPUlegalMove(board, piece, num):
+                legal[piece] = num
+    print(legal)
+    
+        
 
 
-#Define legal move
-#TODO
+#If situation has already occurred and always results in a loss, do not make move.
+
+def makeMove(board, letter, move):
+    board[move] = letter
 
 #Ask player for move
-oldpiece = input('What piece would you like to  move?')
-newpiece = input('Where would you like to move the piece?')
-theBoard[oldpiece] = ' '
-theBoard[newpiece] = 'X'
+printBoard(board)
+oldpiece = int(input('What piece would you like to move? '))
+newpiece = int(input('Where would you like to move the piece? '))
+board[oldpiece] = ' '
+board[newpiece] = 'X'
+printBoard(board)
+
+print("This is the board.")
+print(board)
+
+CPUMove(board)
 
 #AI move
 #TODO
 
-#printBoard(theBoard)
+#printBoard(board)
 
 #Check if winning
 def win():
-    if theBoard['top-L'] == 'X' or theBoard['top-M'] == 'X' or theBoard['top-R'] == 'X':
+    if board['top-L'] == 'X' or board['top-M'] == 'X' or board['top-R'] == 'X':
         print("Player wins. AI will learn from this.")
-    if theBoard['low-L'] == 'O' or theBoard['low-M'] == 'O' or theBoard['low-R'] == 'O':
+    if board['low-L'] == 'O' or board['low-M'] == 'O' or board['low-R'] == 'O':
         print("AI wins. AI will not change.")
 
 #AI changes values due to loss
 #TODO
 
 # def checkWin():
-#     theBoard['top-L'] = 'X'
+#     board['top-L'] = 'X'
 
 # checkWin()
-# printBoard(theBoard)
+# printBoard(board)
 # win()
