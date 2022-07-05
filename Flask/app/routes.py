@@ -164,20 +164,20 @@ def name_entry():
     return render_template('named.html', form=form)
 
 
-# @app.route("/testapp", methods = ['GET'], strict_slashes=False)
-# def parseRequest():
-#     r = requests.get('https://boardgamegeek.com/xmlapi2/thing?id=68264')
-#     #print(r.content)
-#     #print (content)
-#     return r.content
+@app.route("/testapp", methods = ['GET'], strict_slashes=False)
+def parseRequest():
+    r = requests.get('https://boardgamegeek.com/xmlapi2/thing?id=68264')
+    #print(r.content)
+    #print (content)
+    return r.content
 
-# @app.route("/picture", methods = ['POST', 'GET'])
-# def picture():
-#     r = requests.get('https://boardgamegeek.com/xmlapi2/thing?id=68264')
-#     #print(r.content)
-#     #print (content)
-#     root =ET.fromstring(r.content)
-#     for child in root:
-#         print(child.tag, child.attrib)
+@app.route("/picture", methods = ['POST', 'GET'])
+def picture():
+    r = requests.get('https://boardgamegeek.com/xmlapi2/thing?id=68264')
+    #print(r.content)
+    #print (content)
+    root =ET.fromstring(r.content)
+    for child in root:
+        print(child.tag, child.attrib)
 
-#     return root[0][4].text
+    return root[0][4].text
