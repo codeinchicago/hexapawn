@@ -18,7 +18,6 @@ def list():
     return render_template('list.html', games=games)
 
 
-
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
     form = SignUpForm()
