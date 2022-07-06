@@ -16,6 +16,7 @@ class User(db.Model, UserMixin):
     password = db.Column(db.String(256), nullable=False)
     date_created = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     posts = db.relationship('Post', backref='author')
+    games = db.relationship('Game', backref='author')
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -58,8 +59,8 @@ class Post(db.Model):
 class Game(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(25), nullable=False)
-    #user_id = db.Column(db.Integer, db.ForeignKey('user.id')) # FOREIGN KEY(user_id) REFERENCES user(id)
-    #games = db.relationship('Game', backref='author')
+    body = db.Column(db.String(20000), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id')) # FOREIGN KEY(user_id) REFERENCES user(id)
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)

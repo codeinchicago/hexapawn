@@ -12,6 +12,12 @@ def index():
     posts = Post.query.all()
     return render_template('index.html', posts=posts)
 
+@app.route("/list")
+def listing():
+    games = Game.query.all()
+    return render_template('list.html', games=games)
+
+
 
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
@@ -45,8 +51,9 @@ def create_post():
     if form.validate_on_submit():
         # Get data from the form
         post_title = form.title.data
-        post_body = form.body.data
         user_id = current_user.id
+        #Get data from BGG API pull
+        post_body = form.body.data
         # Add new post to database with form info
         new_post = Post(title=post_title, body=post_body, user_id=user_id)
         # Flash a success message to the user
@@ -55,6 +62,66 @@ def create_post():
         return redirect(url_for('index'))
 
     return render_template('create_post.html', form=form)
+
+@app.route('/create-game', methods=["GET", "POST"])
+@login_required
+def create_game():
+    form = GameForm()
+    if form.validate_on_submit():
+        # Get data from the form
+        title = form.title.data
+        user_id = current_user.id
+        #Get data from BGG API pull
+
+        #body = requests.get(f'https://boardgamegeek.com/xmlapi2/search?query={title}&exact=1')
+        r = requests.get('https://boardgamegeek.com/xmlapi2/thing?id=68264')
+        root =ET.fromstring(r.content)
+        for child in root:
+            print(child.tag, child.attrib)
+
+        z = root[0][4].text
+
+        body = z
+
+        # Add new post to database with form info
+        new_game = Game(title=title, body=body, user_id=user_id)
+        # Flash a success message to the user
+        flash(f'"{new_game.title}" has been created', 'success')
+        # Return to the home page
+        return redirect(url_for('list'))
+
+    return render_template('create_game.html', form=form)
+
+
+@app.route('/named', methods=['GET', 'POST'])
+def name_entry():
+    form = GameForm()
+    if form.validate_on_submit():
+        # Get the data from the form fields
+        title = form.title.data
+
+        # Add the game to the database
+        new_game = Game(title = title)
+
+        # Show message of success
+        flash(f'{new_game.title} successfully processed', 'success')
+        
+        print(new_game)
+        return redirect(url_for('linking'), title)
+
+    return render_template('named.html', form=form)
+
+@app.route('/linking', methods=["GET", "POST"])
+def linking(title):
+    r = requests.get(f'https://boardgamegeek.com/xmlapi2/search?query={title}&exact=1')
+    root = ET.fromstring(r.content)
+    for child in root:
+        print(child.tag, child.attrib)
+    info = root[0][4].text
+        
+        # Add new post to database with form info
+
+    return render_template('linking.html', title = title)
 
 
 @app.route('/login', methods=["GET", "POST"])
@@ -94,6 +161,11 @@ def view_single_post(post_id):
     post = Post.query.get_or_404(post_id) # SELECT * FROM post WHERE id = post_id  --(post_id comes from the URL)
     return render_template('single_post.html', post=post)
 
+@app.route('/games/<game_id>')
+def view_single_game(game_id):
+    game = Game.query.get_or_404(game_id) # SELECT * FROM post WHERE id = post_id  --(post_id comes from the URL)
+    return render_template('single_game.html', game=game)
+
 
 @app.route('/edit-posts/<post_id>', methods=["GET", "POST"])
 @login_required
@@ -115,6 +187,26 @@ def edit_single_post(post_id):
 
     return render_template('edit_post.html', post=post_to_edit, form=form)
 
+@app.route('/edit-games/<game_id>', methods=["GET", "POST"])
+@login_required
+def edit_single_game(game_id):
+    game_to_edit = Game.query.get_or_404(game_id)
+    if current_user != game_to_edit.author:
+        flash("You do not have permission to edit that game", "danger")
+        return redirect(url_for('index'))
+    form = GameForm()
+    if form.validate_on_submit():
+        # Get form data
+        new_title = form.title.data
+        new_body = form.body.data
+        # update the post to edit with the form data
+        game_to_edit.update(title=new_title, body=new_body)
+
+        flash(f'{game_to_edit.title} has been updated', 'primary')
+        return redirect(url_for('view_single_game', game_id=game_to_edit.id))
+
+    return render_template('edit_game.html', post=game_to_edit, form=form)
+
 
 @app.route('/delete-posts/<post_id>')
 @login_required
@@ -125,6 +217,17 @@ def delete_single_post(post_id):
         return redirect(url_for('index'))
     post_to_delete.delete()
     flash(f'{post_to_delete.title} has been deleted', 'info')
+    return redirect(url_for('index'))
+
+@app.route('/delete-games/<game_id>')
+@login_required
+def delete_single_game(game_id):
+    game_to_delete = Game.query.get_or_404(game_id)
+    if current_user != game_to_delete.author:
+        flash("You do not have permission to delete that post", "danger")
+        return redirect(url_for('index'))
+    game_to_delete.delete()
+    flash(f'{game_to_delete.title} has been deleted', 'info')
     return redirect(url_for('index'))
 
 @app.route("/test")
@@ -141,27 +244,6 @@ def zugbu():
 #               
 
 
-@app.route('/named', methods=['GET', 'POST'])
-def name_entry():
-    form = GameForm()
-    if form.validate_on_submit():
-        # Get the data from the form fields
-        title = form.title.data
-        # Query the User table for any users with username/email from form
-        # user_check = User.query.filter((User.email == email)|(User.username == username)).all()
-        # if user_check:
-        #     flash('A user with that username and/or email already exists. Please try again.', 'danger')
-        #     return redirect(url_for('signup'))
-
-        # Add the user to the database
-        new_game = Game(title = title)
-
-        # Show message of success
-        flash(f'{new_game.title} successfully processed', 'success')
-        # redirect back to the homepage
-        return redirect(url_for('index'))
-
-    return render_template('named.html', form=form)
 
 
 @app.route("/testapp", methods = ['GET'], strict_slashes=False)
@@ -170,6 +252,7 @@ def parseRequest():
     #print(r.content)
     #print (content)
     return r.content
+
 
 @app.route("/picture", methods = ['POST', 'GET'])
 def picture():
