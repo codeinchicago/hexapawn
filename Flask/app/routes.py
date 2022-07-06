@@ -13,7 +13,7 @@ def index():
     return render_template('index.html', posts=posts)
 
 @app.route("/list")
-def listing():
+def list():
     games = Game.query.all()
     return render_template('list.html', games=games)
 
@@ -71,17 +71,23 @@ def create_game():
         # Get data from the form
         title = form.title.data
         user_id = current_user.id
-        #Get data from BGG API pull
+        
+        #Search for the game, find game ID
+        r = requests.get(f'https://boardgamegeek.com/xmlapi2/search?query={title}&exact=1')
+        root = ET.fromstring(r.content)
+        attrib = root[0].attrib
+        BGGid = (attrib['id'])
+        print(BGGid)
 
-        #body = requests.get(f'https://boardgamegeek.com/xmlapi2/search?query={title}&exact=1')
-        r = requests.get('https://boardgamegeek.com/xmlapi2/thing?id=68264')
-        root =ET.fromstring(r.content)
-        for child in root:
-            print(child.tag, child.attrib)
+        r2 = requests.get(f'https://boardgamegeek.com/xmlapi2/thing?id={BGGid}')
 
-        z = root[0][4].text
-
-        body = z
+        root2 = ET.fromstring(r2.content)
+        
+        #Getting the description
+        for child in root2.iter('*'):
+            if child.tag == 'description':
+                body = child.text
+                print(body)
 
         # Add new post to database with form info
         new_game = Game(title=title, body=body, user_id=user_id)
