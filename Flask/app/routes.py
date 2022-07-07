@@ -1,7 +1,8 @@
+from sqlalchemy import desc
 from app import app
 from flask import render_template, redirect, url_for, flash, request
 from flask_login import login_user, login_required, logout_user, current_user
-from app.forms import GameForm, SignUpForm, PostForm, LoginForm
+from app.forms import CommentsForm, GameForm, SignUpForm, PostForm, LoginForm
 from app.models import Post, User, Game
 #import xmltodict
 import requests
@@ -9,13 +10,19 @@ import xml.etree.ElementTree as ET
 
 @app.route("/")
 def index():
-    posts = Post.query.all()
-    return render_template('index.html', posts=posts)
+    games = Game.query.all()
+    return render_template('list.html', games=games)
 
 @app.route("/list")
 def list():
     games = Game.query.all()
     return render_template('list.html', games=games)
+
+@app.route("/listalpha")
+def listalpha():
+    #Sort games alphabetically
+    games= Game.query.order_by(Game.title).all()
+    return render_template('listalpha.html', games=games)
 
 
 @app.route('/signup', methods=['GET', 'POST'])
@@ -38,7 +45,7 @@ def signup():
         # Show message of success
         flash(f'{new_user.username} has successfully signed up!', 'success')
         # redirect back to the homepage
-        return redirect(url_for('index'))
+        return redirect(url_for('list'))
 
     return render_template('signup.html', form=form)
 
@@ -70,7 +77,12 @@ def create_game():
         # Get data from the form
         title = form.title.data
         user_id = current_user.id
+        comments = "Edit this to display your thoughts about the game."
+        title_check = Game.query.filter((Game.title == title)&(Game.user_id == user_id)).all()
         
+        if title_check:
+            flash('You have already entered that game. Enter another,', 'danger')
+            return redirect(url_for('list'))
         #Search for the game, find game ID
         r = requests.get(f'https://boardgamegeek.com/xmlapi2/search?query={title}&exact=1')
         root = ET.fromstring(r.content)
@@ -88,8 +100,8 @@ def create_game():
                 body = child.text
                 print(body)
 
-        # Add new post to database with form info
-        new_game = Game(title=title, body=body, user_id=user_id)
+        # Add new game to database with form info
+        new_game = Game(title=title, body=body, comments=comments, user_id=user_id)
         # Flash a success message to the user
         flash(f'"{new_game.title}" has been created', 'success')
         # Return to the home page
@@ -145,7 +157,7 @@ def login():
             # Flash a success message
             flash(f"Welcome back, {user.username}!", "primary")
             # Redirect to the home page
-            return redirect(url_for('index'))
+            return redirect(url_for('list'))
         
         # If user is None or password incorrect, flash message and redirect to login
         flash('Incorrect username and/or password. Please try again.', 'danger')
@@ -158,13 +170,18 @@ def login():
 def logout():
     logout_user()
     flash('You have logged out of the blog', 'secondary')
-    return redirect(url_for('index'))
+    return redirect(url_for('list'))
 
 
 @app.route('/posts/<post_id>')
 def view_single_post(post_id):
     post = Post.query.get_or_404(post_id) # SELECT * FROM post WHERE id = post_id  --(post_id comes from the URL)
     return render_template('single_post.html', post=post)
+
+@app.route('/theory')
+def theory():
+    return render_template('theory.html')
+
 
 @app.route('/games/<game_id>')
 def view_single_game(game_id):
@@ -198,19 +215,18 @@ def edit_single_game(game_id):
     game_to_edit = Game.query.get_or_404(game_id)
     if current_user != game_to_edit.author:
         flash("You do not have permission to edit that game", "danger")
-        return redirect(url_for('index'))
-    form = GameForm()
+        return redirect(url_for('list'))
+    form = CommentsForm()
     if form.validate_on_submit():
         # Get form data
-        new_title = form.title.data
-        new_body = form.body.data
+        new_comments = form.comments.data
         # update the post to edit with the form data
-        game_to_edit.update(title=new_title, body=new_body)
+        game_to_edit.update(comments = new_comments)
 
         flash(f'{game_to_edit.title} has been updated', 'primary')
         return redirect(url_for('view_single_game', game_id=game_to_edit.id))
 
-    return render_template('edit_game.html', post=game_to_edit, form=form)
+    return render_template('edit_game.html', game=game_to_edit, form=form)
 
 
 @app.route('/delete-posts/<post_id>')
@@ -230,10 +246,10 @@ def delete_single_game(game_id):
     game_to_delete = Game.query.get_or_404(game_id)
     if current_user != game_to_delete.author:
         flash("You do not have permission to delete that post", "danger")
-        return redirect(url_for('index'))
+        return redirect(url_for('list'))
     game_to_delete.delete()
     flash(f'{game_to_delete.title} has been deleted', 'info')
-    return redirect(url_for('index'))
+    return redirect(url_for('list'))
 
 @app.route("/test")
 def zugbu():

@@ -25,3 +25,7 @@ class LoginForm(FlaskForm):
 class GameForm(FlaskForm):
     title = StringField('Enter Game Name', validators=[DataRequired()])
     submit = SubmitField()
+
+class CommentsForm(FlaskForm):
+    comments = StringField('Enter Comments', validators=[DataRequired()])
+    submit = SubmitField()

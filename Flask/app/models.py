@@ -30,7 +30,6 @@ class User(db.Model, UserMixin):
     def check_password(self, password):
         return check_password_hash(self.password, password)
 
-
 class Post(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(25), nullable=False)
@@ -59,7 +58,8 @@ class Post(db.Model):
 class Game(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(25), nullable=False)
-    body = db.Column(db.String(20000), nullable=False)
+    body = db.Column(db.String(1000), nullable=False)
+    comments = db.Column(db.String(250), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id')) # FOREIGN KEY(user_id) REFERENCES user(id)
 
     def __init__(self, **kwargs):
@@ -72,7 +72,7 @@ class Game(db.Model):
 
     def update(self, **kwargs):
         for key, value in kwargs.items():
-            if key in {'title'}:
+            if key in {'comments'}:
                 setattr(self, key, value)
         db.session.commit()
 

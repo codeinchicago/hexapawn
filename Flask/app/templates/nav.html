@@ -1,13 +1,13 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container-fluid">
-        <a class="navbar-brand" href="{{ url_for('index') }}">Kekambas Blog</a>
+        <a class="navbar-brand" href="{{ url_for('list') }}">Game List Extraordinare</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav">
             <li class="nav-item">
-            <a class="nav-link" href="{{ url_for('index') }}">Home</a>
+            <a class="nav-link" href="{{ url_for('list') }}">Home</a>
             </li>
             {% if current_user.is_anonymous %}
             <li class="nav-item">
@@ -16,15 +16,22 @@
             <li class="nav-item">
             <a class="nav-link" href="{{ url_for('login') }}">Log In</a>
             </li>
-            {% else %}
             <li class="nav-item">
-            <a class="nav-link" href="{{ url_for('create_post') }}">Create A Post</a>
+            <a class="nav-link" href="{{ url_for('theory') }}">Game Theory Terms</a>
             </li>
+            {% else %}
+            <!-- <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('create_post') }}">Create A Post</a>
+            </li> -->
+
             <li class="nav-item">
-            <a class="nav-link" href="{{ url_for('logout') }}">Log Out</a>
+            <a class="nav-link" href="{{ url_for('theory') }}">Game Theory Terms</a>
             </li>
             <li class="nav-item">
             <a class="nav-link" href="{{ url_for('create_game') }}">Look Up a Game</a>
+            </li>
+            <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('logout') }}">Log Out</a>
             </li>
                 
             {% endif %}

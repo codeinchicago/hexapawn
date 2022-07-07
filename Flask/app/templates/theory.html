@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block title %}Time to Learn{% endblock %}
+
+{% block content %}
+<h4>An Overview of Common Terms in Game Theory</h4>
+
+
+<div>
+
+<b>Game:</b> A set of players and their possibilities to play the game according to their strategies.
+<br>
+
+<b>Game Theory:</b> Situations where results depend not only on a player's decision but those of others. Game theory applies to economics, social science, biology. The dependence on other's actions makes game theory different than optimization.
+<br>
+
+<b>Normal Form Game:</b> Finite number of players and a strategy set for each player, such as cooperate or defect in the prisoner's dilemma. There are known outcomes.
+Note that strategies/moves available may be different for each player.
+
+<br>
+<b>Extensive Form Game:</b> Players execute moves consecutively, as compared to once for a normal form game. Games are represented by trees, and nodes are possible stages of the game.
+<br>
+
+<b>Nash Equilibrium:</b> No player gains anything by changing his or her strategy. 
+<br>
+<b>Mixed Strategy:</b> Choosing strategy randomly. Common example is good play in rock, paper, scissors.
+<br>
+<b>Pure Strategy:</b> Choosing a fixed strategy. Note that moves may be different, always choosing Up,Up,Down in the game above is a fixed strategy.
+<br>
+<b>Expected Value:</b> average. Frequently written as E[x].
+<br>
+<b>Dominant Strategy:</b> A certain move is best for a player, regardless of what the opponent does. Prisoner's dilemma has defect as example of dominant strategy, it is the best move for the player regardless of whether opponent cooperates or defects.
+<br>
+<b>Tragedy of the Commons:</b> Each player maximizing utility leads to worse outcome for both than if both had cooperated. The classic example is overfishing, each individual is better off by fishing, since each fish caught has a neglible effect on a pond, but everyone fishing leads to depletion.
+<br>
+<b>Types of Outcomes for Prisoner's Dilemma:</b><br>
+<u>R</u>eward for mutual cooperation. Both cooperate.<br>
+<u>T</u>emptation to defect. You defect, opponent cooperates.<br>
+<u>P</u>unishment for mutual defection.<br>
+<u>S</u>ucker, cooperate while other defects.<br>
+
+T > R > P > S.
+Order of preferential outcome changes games, chicken with cars has P (neither car swerving) as worst outcome.
+
+
+</div>
+
+{% endblock content %}
