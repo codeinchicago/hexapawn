@@ -98,10 +98,12 @@ def create_game():
         for child in root2.iter('*'):
             if child.tag == 'description':
                 body = child.text
-                print(body)
+                #print(body)
+            if child.tag == 'thumbnail':
+                picture = child.text
 
         # Add new game to database with form info
-        new_game = Game(title=title, body=body, comments=comments, user_id=user_id)
+        new_game = Game(title=title, body=body, comments=comments, picture=picture, user_id=user_id)
         # Flash a success message to the user
         flash(f'"{new_game.title}" has been created', 'success')
         # Return to the home page

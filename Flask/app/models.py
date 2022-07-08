@@ -60,6 +60,7 @@ class Game(db.Model):
     title = db.Column(db.String(25), nullable=False)
     body = db.Column(db.String(1000), nullable=False)
     comments = db.Column(db.String(250), nullable=False)
+    picture = db.Column(db.String(350), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id')) # FOREIGN KEY(user_id) REFERENCES user(id)
 
     def __init__(self, **kwargs):
